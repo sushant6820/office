@@ -54,3 +54,25 @@ try {
     res.status(500).json({ message: 'Something went wrong', error: err.message })
 }
 }
+
+
+export const updateUser = async (req, res) => {
+    const { username, email, password } = req.body;
+  
+    try {
+      const user = await userModel.findById(req.user.userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      if (username) user.username = username;
+      if (email) user.email = email;
+      if (password) user.password = await bcrypt.hash(password, 10);
+  
+      await user.save();
+  
+      res.status(200).json({ message: "User updated successfully", user });
+    } catch (error) {
+      res.status(500).json({ message: "Something went wrong", error: error.message });
+      console.log(error)
+    }
+  };
+  
